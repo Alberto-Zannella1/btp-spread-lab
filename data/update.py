@@ -8,6 +8,7 @@ Usage: python data/update.py
 4. riferimento.py    €STR and Bund yields from the ECB and Bundesbank APIs
 5. database.py       everything into data/btp.db
 6. pricing           yield, duration, DV01 for every bond and day (table 'analytics')
+7. curve             daily NSS curve fit, rich/cheap residuals, BTP-Bund spread
 
 Before running: put new Euronext downloads in data/raw/euronext/ and, at the
 start of each month, the new Bank of Italy file in data/raw/.
@@ -28,6 +29,7 @@ STEPS = [
     [str(DATA_DIR / "riferimento.py")],
     [str(DATA_DIR / "database.py")],
     ["-m", "pricing.run_pricing"],
+    ["-m", "curve.fit_curve"],
 ]
 
 

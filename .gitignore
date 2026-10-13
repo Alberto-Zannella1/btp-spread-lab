@@ -6,3 +6,4 @@ data/raw/euronext/
 data/btp_prices.csv
 data/reference_rates.csv
 data/btp.db
+output/
