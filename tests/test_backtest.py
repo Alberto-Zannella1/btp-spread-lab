@@ -58,3 +58,22 @@ def test_no_profit_from_the_signal_day_price():
     spread[200] += 10.0
     trades, _ = run(market(spread), [("A", "B")], Params(cost_bp=0.0, min_half_life=0))
     assert trades["pnl_bp"].abs().max() < 0.5  # no trade comes anywhere near 10 bp
+
+
+def test_same_day_execution_would_capture_the_fake_jump():
+    # The diagnostic mode (execution_lag=0) shows why it is forbidden: it earns on the one-day jump.
+    rng = np.random.default_rng(3)
+    spread = rng.normal(0, 0.05, N)
+    spread[200] += 10.0
+    trades, _ = run(market(spread), [("A", "B")], Params(cost_bp=0.0, min_half_life=0, execution_lag=0))
+    assert trades["pnl_bp"].max() > 1.5
+
+
+def test_butterfly_is_neutral_to_level_and_slope():
+    from backtest.research import build_butterflies
+    bonds = pd.DataFrame({"isin": ["S", "A", "L"], "maturity": ["2031-01-01", "2032-01-01", "2033-07-01"]})
+    (a, wa), (s, ws), (l, wl) = build_butterflies(bonds, ["S", "A", "L"], "2026-01-01")[0]
+    years = {k: (pd.Timestamp(m) - pd.Timestamp("2026-01-01")).days / 365.25 for k, m in zip(bonds["isin"], bonds["maturity"])}
+    assert (a, s, l) == ("A", "S", "L")
+    assert abs(wa + ws + wl) < 1e-12                                                # parallel move: no P&L
+    assert abs(wa * years[a] + ws * years[s] + wl * years[l]) < 1e-12               # slope change: no P&L

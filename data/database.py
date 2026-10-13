@@ -4,6 +4,7 @@ Tables:
 - bonds           the BTP universe (from btp_universe.csv)
 - prices          daily clean prices (from btp_prices.csv)
 - reference_rates €STR and Bund yields (from reference_rates.csv)
+- auctions        BTP auction results (from auctions.csv)
 
 The later modules (pricing, curve, signals...) read from here, so they do not
 need to know where each CSV comes from.
@@ -21,6 +22,7 @@ SOURCES = {
     "bonds": (DATA_DIR / "btp_universe.csv", ["issue_date", "maturity"]),
     "prices": (DATA_DIR / "btp_prices.csv", ["date"]),
     "reference_rates": (DATA_DIR / "reference_rates.csv", ["date"]),
+    "auctions": (DATA_DIR / "auctions.csv", ["date", "settle_date"]),
 }
 
 

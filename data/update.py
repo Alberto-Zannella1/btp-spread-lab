@@ -3,6 +3,7 @@
 Usage: python data/update.py
 
 1. anagrafica.py     BTP universe from the Bank of Italy file
+   aste.py           BTP auction results from the Bank of Italy files
 2. prezzi.py         clean prices from the Euronext files in data/raw/euronext/
 3. check_prices.py   data-quality report
 4. riferimento.py    €STR and Bund yields from the ECB and Bundesbank APIs
@@ -27,6 +28,7 @@ ROOT = DATA_DIR.parent
 # Each step is the command after "python"
 STEPS = [
     [str(DATA_DIR / "anagrafica.py")],
+    [str(DATA_DIR / "aste.py")],
     [str(DATA_DIR / "prezzi.py")],
     [str(DATA_DIR / "check_prices.py")],
     [str(DATA_DIR / "riferimento.py")],
