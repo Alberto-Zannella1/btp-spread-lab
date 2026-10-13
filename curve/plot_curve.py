@@ -56,17 +56,25 @@ def plot_curve(day: str) -> Path:
                     edgecolor="black", s=45, zorder=3)
     fig.colorbar(sc, ax=ax, label="Residual (bp): green = cheap, red = rich")
 
+    # Number the cheapest and richest bonds on the chart and list them in a box:
+    # bonds close together on the curve would otherwise have overlapping labels.
     labelled = pd.concat([fit.nlargest(N_LABELS, "residual_bp"), fit.nsmallest(N_LABELS, "residual_bp")])
-    for r in labelled.itertuples():
-        ax.annotate(f"{short_name(r.description)} ({r.residual_bp:+.1f})", (r.years, r.ytm),
-                    xytext=(6, -12 if r.residual_bp < 0 else 8), textcoords="offset points", fontsize=8)
+    lines = []
+    for n, r in enumerate(labelled.itertuples(), start=1):
+        ax.annotate(str(n), (r.years, r.ytm), xytext=(0, 9 if r.residual_bp > 0 else -15),
+                    textcoords="offset points", ha="center", fontsize=8, fontweight="bold")
+        kind = "cheap" if r.residual_bp > 0 else "rich"
+        lines.append(f"{n}  {short_name(r.description):<18} {r.residual_bp:+5.1f} bp  {kind}")
+    ax.text(0.98, 0.04, "\n".join(lines), transform=ax.transAxes, ha="right", va="bottom", multialignment="left",
+            fontsize=8, family="monospace", bbox=dict(boxstyle="round", fc="white", ec="0.7"))
 
     rmse = params["rmse_bp"].iloc[0]
     ax.set_title(f"BTP curve on {day}  -  {len(fit)} bonds, fit RMSE {rmse:.1f} bp")
     ax.set_xlabel("Years to maturity")
     ax.set_ylabel("Yield to maturity (%, semiannual)")
+    ax.margins(y=0.08)  # leave room above the highest points for their numbers
     ax.grid(alpha=0.3)
-    ax.legend(loc="lower right")
+    ax.legend(loc="upper left")
 
     out = OUT_DIR / f"btp_curve_{day}.png"
     fig.savefig(out, dpi=150, bbox_inches="tight")
