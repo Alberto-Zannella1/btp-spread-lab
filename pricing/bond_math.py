@@ -114,6 +114,19 @@ def risk_measures(bond: ql.FixedRateBond, clean_price: float, trade_date: date) 
     }
 
 
+def accrued_at(bond: ql.FixedRateBond, settle: date) -> float:
+    """Accrued interest at a given settlement date (not a trade date)."""
+    return bond.accruedAmount(to_ql(settle))
+
+
+def ytm_at(bond: ql.FixedRateBond, clean_price: float, settle: date) -> float:
+    """Yield in percent (semiannual) for a given settlement date, e.g. a forward date."""
+    ql.Settings.instance().evaluationDate = to_ql(settle)
+    price = ql.BondPrice(clean_price, ql.BondPrice.Clean)
+    y = ql.BondFunctions.bondYield(bond, price, _day_count(bond), ql.Compounded, ql.Semiannual, to_ql(settle))
+    return y * 100
+
+
 def to_annual(ytm_semiannual: float) -> float:
     """Semiannual-compounded yield -> annual-compounded yield (both in percent)."""
     return ((1 + ytm_semiannual / 200) ** 2 - 1) * 100

@@ -10,6 +10,8 @@ Usage: python data/update.py
 6. pricing           yield, duration, DV01 for every bond and day (table 'analytics')
 7. curve             daily NSS curve fit, rich/cheap residuals, BTP-Bund spread
 8. signals           z-scores and half-lives of the residuals
+9. carry             one-month carry and roll-down of every bond
+10. switches         DV01-neutral switch candidates for the latest day
 
 Before running: put new Euronext downloads in data/raw/euronext/ and, at the
 start of each month, the new Bank of Italy file in data/raw/.
@@ -32,6 +34,8 @@ STEPS = [
     ["-m", "pricing.run_pricing"],
     ["-m", "curve.fit_curve"],
     ["-m", "signals.zscore"],
+    ["-m", "signals.carry"],
+    ["-m", "signals.switches"],
 ]
 
 
